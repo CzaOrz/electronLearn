@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文件拖拽相关</title>
+    <style>
+        #holder {
+            height: 300px;
+            width: 300px;
+            background-color: antiquewhite;
+        }
+    </style>
+</head>
+<body>
+<div id="holder">
+    drag you file here
+</div>
+<script>
+    document.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        for (let file of e.dataTransfer.files) {
+            /*
+            * electron 为file提供了一个path属性，可以直接拿到绝对路径
+            * */
+            var reader = new FileReader();
+            reader.onload = (e) => {
+                var
+                    img = document.querySelector('#holder'),
+                    data = e.target.result;
+                img.style.backgroundImage = `url(${data})`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+</script>
+</body>
+</html>
