@@ -1,1 +1,2 @@
-require('./series/1_文件操作相关/index');
+// require('./series/1_文件操作相关/index');
+require('./series/2_主渲交互/index');

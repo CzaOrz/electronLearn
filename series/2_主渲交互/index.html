@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>主进程与渲染进程交互</title>
+</head>
+<body>
+<div id="box"></div>
+<script>
+    var
+        {remote, ipcRenderer} = require('electron'),
+        {getGlobal, BrowserWindow} = remote,
+        box = document.querySelector('#box');
+
+    function newChildNode(html) {
+        var childNode = document.createElement('div');
+        childNode.innerHTML = html;
+        return childNode
+    }
+
+    box.appendChild(newChildNode(Object.keys(getGlobal('$data'))));
+
+    /*
+    * 同步请求
+    * */
+    ipcRenderer.sendSync('synchronous-message', 'ping');
+
+    /*
+    * 异步请求
+    * */
+    ipcRenderer.on('asynchronous-reply', (event, arg) => {
+        box.appendChild(newChildNode(arg))
+    });
+    ipcRenderer.send('asynchronous-message', 'ping');
+
+    /*
+    * 这种异步函数的写法就很强
+    * */
+    async function asyncFunc() {
+        const result = await ipcRenderer.invoke('my-invokable-ipc', 'async func');
+        box.appendChild(newChildNode(result));
+    }
+
+    asyncFunc();
+
+    /*
+    * 在渲染进程中打开一个新的win窗口，可以使指定新的url链接，或者直接就是文件路径
+    * */
+    let win = new BrowserWindow({
+        height: 1000,
+        width: 1000
+    });
+    win.loadURL('https://www.baidu.com')
+</script>
+</body>
+</html>
