@@ -1,8 +1,11 @@
 var
     path = require('path'),
-    {app, BrowserWindow, Menu} = require('electron');
+    {app, BrowserWindow, Menu, dialog} = require('electron');
 
-if (!app.requestSingleInstanceLock()) app.quit();
+if (!app.requestSingleInstanceLock()) {
+    dialog.showErrorBox('', '仅允许开启一个');
+    app.quit()
+}
 
 app.on('ready', () => {
     var win = new BrowserWindow({
@@ -50,7 +53,8 @@ app.on('ready', () => {
             submenu: [
                 {
                     label: '陈子昂',
-                    role: 'undo'
+                    role: 'undo',
+                    accelerator: 'Ctrl+Q'
                 },
                 {role: 'redo'},
                 {type: 'separator'},

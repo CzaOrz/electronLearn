@@ -1,6 +1,6 @@
 var
     path = require('path'),
-    {app, BrowserWindow, ipcMain} = require('electron');
+    {app, BrowserWindow, ipcMain, webContents} = require('electron');
 
 ipcMain.on('synchronous-message', (event, arg) => {
     event.returnValue = 'pong from synchronous';
@@ -33,6 +33,10 @@ app.on('ready', () => {
         }
     });
     win.loadFile(path.join(__dirname, 'index.html'));
+
+    /*
+    * webContents 可以从electron中导入，也可以从win中引出，用于 渲染和控制 BrowserWindow 实例的内容
+    * */
 });
 
 app.on('win-all-closed', () => {
