@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #box {
+            height: 300px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+<button id="chooseDir">chooseDir</button>
+<input type="file">
+<div id="box">
+    <img src="" alt="" id="image">
+</div>
+<script>
+    var
+        images = [],
+        imageDir = '',
+        fs = require('fs'),
+        path = require('path'),
+        {dialog, getCurrentWindow} = require('electron').remote,
+        btn = document.querySelector('#chooseDir'),
+        img = document.querySelector('#image');
+
+    function nextImage() {
+        var image = images.pop();
+        if (image) {
+            fs.readFile(path.join(imageDir, image), (err, data) => {
+                if (err) {
+                    console.log('???', err)
+                } else {
+                    img.setAttribute('src', `data:image/png;base64,${data.toString('base64')}`);
+                }
+            });
+        }
+    }
+
+    function showFilePath(filePath) {
+        fs.readdir(filePath, (err, data) => {
+            if (err) {
+                console.log(err)
+            } else {
+                images = data;
+                imageDir = filePath;
+                nextImage();
+                alert(`查询到${images.length}张图片`);
+            }
+        })
+    }
+
+    function trickDialogWindow() {
+        if (images.length) {
+            nextImage();
+            return
+        }
+        dialog.showOpenDialog(getCurrentWindow(), {
+            properties: ['openDirectory']
+        }).then(result => {
+            showFilePath(result.[0])
+        })
+    }
+    filePaths
+    btn.addEventListener('click', () => trickDialogWindow())
+</script>
+</body>
+</html>

@@ -36,21 +36,19 @@
     /*
     * 这种异步函数的写法就很强
     * */
-    async function asyncFunc() {
+    (async () => {
         const result = await ipcRenderer.invoke('my-invokable-ipc', 'async func');
         box.appendChild(newChildNode(result));
-    }
-
-    asyncFunc();
+    })();
 
     /*
     * 在渲染进程中打开一个新的win窗口，可以使指定新的url链接，或者直接就是文件路径
     * */
-    let win = new BrowserWindow({
-        height: 1000,
-        width: 1000
-    });
-    win.loadURL('https://www.baidu.com')
+    // let win = new BrowserWindow({
+    //     height: 1000,
+    //     width: 1000
+    // });
+    // win.loadURL('https://www.baidu.com')
 </script>
 </body>
 </html>
