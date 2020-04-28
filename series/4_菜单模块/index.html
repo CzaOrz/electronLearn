@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>菜单模块</title>
+</head>
+<body>
+<script>
+    const
+        {remote} = require('electron'),
+        {Menu, MenuItem, getCurrentWindow} = remote;
+
+    const menu = new Menu();
+    menu.append(new MenuItem({  // 可以点击并执行对应功能的菜单
+        label: 'MenuItem1',
+        click() {
+            setTimeout(() => {
+                alert('hello world')
+            }, 1000);
+        }
+    }));
+    menu.append(new MenuItem({  // 插入分隔符的意思
+        type: 'separator'
+    }));
+    menu.append(new MenuItem({  // 可点选的菜单，默认为已勾选状态
+        label: 'MenuItem2',
+        type: 'checkbox',
+        checked: true
+    }));
+    addEventListener('contextmenu', (e) => {  // contextmenu 监听的鼠标右键事件嘛
+        e.preventDefault();
+        e.stopPropagation();
+        menu.popup({  // 将此菜单作为 browserWindow 中的上下文菜单弹出
+            window: getCurrentWindow()
+        })
+    });
+</script>
+</body>
+</html>
