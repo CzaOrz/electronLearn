@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分类器</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        #classify-box {
+            height: 100vh;
+            width: 100vw;
+            background-image: linear-gradient(45deg, #FFCDD2, #B3E5FC);
+            overflow: hidden;
+        }
+
+        #classify-box > div {
+            height: 100%;
+            float: left;
+            position: relative;
+        }
+
+        .box-left {
+            width: calc(100% - 300px);
+        }
+
+        .source-img {
+            max-width: calc(100% - 300px);
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .box-right {
+            width: 300px;
+            background-color: rgba(0, 0, 0, .3);
+        }
+
+        .add-classify-item {
+            height: 100px;
+            width: 100%;
+            line-height: 100px;
+            text-align: center;
+            background-color: rgba(0, 0, 0, .1);
+        }
+
+        .add-classify {
+            border: none;
+            outline: none;
+            text-decoration: none;
+            background: linear-gradient(135deg, #81D4FA, #AB47BC, #81D4FA);
+            background-size: 200%;
+            width: 130px;
+            height: 50px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-position 0.5s ease,
+            color 0.5s ease;
+            color: #fff;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .add-classify:hover {
+            background-position: right;
+            color: rgba(0, 0, 0, .7);
+        }
+
+        .add-classify:active {
+            transform: translateY(-1.5px);
+        }
+
+        .classify-items {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .classify-item {
+            height: 80px;
+            width: 100%;
+            line-height: 80px;
+            text-align: center;
+            transition: background-color 1.2s ease;
+        }
+
+        .classify-item:hover {
+            background-color: rgba(0, 0, 0, .2);
+        }
+
+        .classify-btn {
+            width: 100px;
+            height: 30px;
+            border: none;
+            outline: none;
+            border-radius: 5px;
+            background-color: #B3E5FC;
+            cursor: pointer;
+            transition: background-color .6s ease;
+        }
+
+        .classify-btn:hover {
+            background-color: #81D4FA;
+        }
+
+        .classify-btn:active {
+            background-color: #03A9F4;
+        }
+
+        .flower-box {
+            position: absolute;
+            height: 400px;
+            width: 500px;
+            top: -100%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: top 1s ease;
+            background-color: #f1f1f1;
+            border-radius: 8px;
+        }
+
+        .flower-classify {
+            height: 60px;
+            width: 100%;
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .flower-classify-label {
+            position: relative;
+            line-height: 40px;
+        }
+
+        .flower-classify-input {
+            border: none;
+            background: none;
+            outline: none;
+            line-height: 40px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .flower-classify-label::after {
+            content: '';
+            position: absolute;
+            display: block;
+            height: 2px;
+            width: 100%;
+            background-color: gray;
+            bottom: -4px;
+            left: 0;
+        }
+
+        .flower-dir {
+            height: 300px;
+            width: 400px;
+            margin: 4px auto;
+            background-color: rgba(0, 0, 0, .1);
+            color: rgba(0, 0, 0, .3);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .flower-dir-info {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: block;
+            max-width: 100%;
+            white-space: pre-wrap;
+            overflow: hidden;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+<div id="classify-box">
+    <div class="box-left">
+        <img src="" alt="" class="source-img">
+    </div>
+    <div class="box-right">
+        <div class="add-classify-item">
+            <button class="add-classify">添加分类</button>
+        </div>
+        <!--        <div class="classify-items">-->
+        <!--            <div class="classify-item">-->
+        <!--                <button class="classify-btn">工商注册证</button>-->
+        <!--            </div>-->
+        <!--            <div class="classify-item">-->
+        <!--                <button class="classify-btn">食品安全书</button>-->
+        <!--            </div>-->
+        <!--        </div>-->
+    </div>
+</div>
+<div class="flower-box">
+    <div class="flower-classify">
+        <label class="flower-classify-label">
+            <input type="text" class="flower-classify-input">
+        </label>
+    </div>
+    <div class="flower-dir">
+        <span class="flower-dir-info">请将目录拖放到此处</span>
+    </div>
+</div>
+<script>
+    var
+        sourceDir = '',
+        sourceImg = [],
+        currentImg = '',
+        tempDirName = '',
+        tempDirPath = '';
+    var
+        sourceImgEl = document.querySelector('.source-img'),
+        addClassify = document.querySelector('.add-classify'),
+        classifyItems = document.querySelector('.classify-items'),
+        flowerBox = document.querySelector('.flower-box'),
+        flowerDir = document.querySelector('.flower-dir'),
+        flowerClassifyInput = document.querySelector('.flower-classify-input'),
+        flowerDirInfo = document.querySelector('.flower-dir-info');
+    var
+        path = require('path'),
+        fs = require('fs');
+
+    function moveImg(oldDir, newDir) {
+        fs.rename(oldDir, newDir, () => {
+            nextImage();
+        });
+    }
+
+    function newNode(dirName, dirPath) {
+        var
+            div = document.createElement('div'),
+            btn = document.createElement('button');
+        div.classList.add('classify-item');
+        btn.classList.add('classify-btn');
+        btn.innerText = dirName;
+        btn.onclick = function () {
+            if (currentImg) {
+                moveImg(
+                    path.join(sourceDir, currentImg),
+                    path.join(dirPath, currentImg)
+                );
+            }
+        };
+        div.appendChild(btn);
+        classifyItems.appendChild(div);
+    }
+
+
+    function nextImage() {
+        var image = sourceImg.pop();
+        if (image.lastIndexOf('jpg') || image.lastIndexOf('png')) {
+            if (image) {
+                currentImg = image;
+                fs.readFile(path.join(sourceDir, image), (err, data) => {
+                    if (err) {
+                    } else {
+                        sourceImgEl.setAttribute('src', `data:image/png;base64,${data.toString('base64')}`);
+                    }
+                });
+            } else {
+                currentImg = '';
+                sourceImgEl.setAttribute('src', '');
+            }
+        }
+    }
+
+    function loadDir(dirPath) {
+        fs.readdir(dirPath, (err, data) => {
+            if (err) {
+                console.log(err)
+            } else {
+                sourceImg = data;
+                sourceDir = dirPath;
+                nextImage();
+                flowerDirInfo.innerText = '请将目录拖放到此处';
+                flowerDirInfo.style.color = "rgba(0, 0, 0, .3)";
+            }
+        })
+    }
+
+    function checkFlower() {
+        if (tempDirPath) {
+            if (flowerClassifyInput.value) {
+                tempDirName = flowerClassifyInput.value;
+                flowerClassifyInput.value = '';
+                flowerDirInfo.innerText = '请将目录拖放到此处';
+                flowerDirInfo.style.color = "rgba(0, 0, 0, .3)";
+                newNode(tempDirName, tempDirPath)
+            } else {
+                loadDir(tempDirPath)
+            }
+        }
+    }
+
+    flowerDir.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer.files) {
+            tempDirPath = e.dataTransfer.files[0].path;
+            flowerDirInfo.innerText = tempDirPath;
+            flowerDirInfo.style.color = 'green';
+        }
+    });
+    flowerDir.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    addClassify.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        switch (flowerBox.style.top) {
+            case '':
+            case '-100%':
+                flowerBox.style.top = '50%';
+                break;
+            case '50%':
+                flowerBox.style.top = '-100%';
+                checkFlower();
+                break;
+        }
+    });
+</script>
+</body>
+</html>
