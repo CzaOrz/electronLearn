@@ -32,6 +32,19 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
+            animation: showToggle 1s;
+            animation-fill-mode: backwards;
+            transition: opacity 1s ease,
+            left 1s ease;
+        }
+
+        @keyframes showToggle {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
         .box-right {
@@ -51,13 +64,13 @@
             border: none;
             outline: none;
             text-decoration: none;
-            background: linear-gradient(135deg, #81D4FA, #AB47BC, #81D4FA);
+            background: linear-gradient(135deg, #81D4FA, #F48FB1, #81D4FA);
             background-size: 200%;
             width: 130px;
             height: 50px;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-position 0.5s ease,
+            transition: background-position 1.5s ease,
             color 0.5s ease;
             color: #fff;
             font-weight: bold;
@@ -86,6 +99,8 @@
             line-height: 80px;
             text-align: center;
             transition: background-color 1.2s ease;
+            animation: showToggle 1s;
+            animation-fill-mode: backwards;
         }
 
         .classify-item:hover {
@@ -98,17 +113,17 @@
             border: none;
             outline: none;
             border-radius: 5px;
-            background-color: #B3E5FC;
+            background-color: #FFEE58;
             cursor: pointer;
             transition: background-color .6s ease;
         }
 
         .classify-btn:hover {
-            background-color: #81D4FA;
+            background-color: #FFEB3B;
         }
 
         .classify-btn:active {
-            background-color: #03A9F4;
+            background-color: #FDD835;
         }
 
         .flower-box {
@@ -178,24 +193,25 @@
             word-break: break-all;
         }
     </style>
+    <script src="./alert-win.js"></script>
 </head>
 <body>
 <div id="classify-box">
     <div class="box-left">
-        <img src="" alt="" class="source-img">
+        <!--        <img src="" alt="" class="source-img">-->
     </div>
     <div class="box-right">
         <div class="add-classify-item">
             <button class="add-classify">添加分类</button>
         </div>
-        <!--        <div class="classify-items">-->
-        <!--            <div class="classify-item">-->
-        <!--                <button class="classify-btn">工商注册证</button>-->
-        <!--            </div>-->
-        <!--            <div class="classify-item">-->
-        <!--                <button class="classify-btn">食品安全书</button>-->
-        <!--            </div>-->
-        <!--        </div>-->
+        <div class="classify-items">
+            <!--            <div class="classify-item">-->
+            <!--                <button class="classify-btn">工商注册证</button>-->
+            <!--            </div>-->
+            <!--            <div class="classify-item">-->
+            <!--                <button class="classify-btn">食品安全书</button>-->
+            <!--            </div>-->
+        </div>
     </div>
 </div>
 <div class="flower-box">
@@ -212,11 +228,13 @@
     var
         sourceDir = '',
         sourceImg = [],
-        currentImg = '',
+        sourceImgEl = '',
+        currentImg = null,
         tempDirName = '',
         tempDirPath = '';
     var
-        sourceImgEl = document.querySelector('.source-img'),
+        boxLeft = document.querySelector('.box-left'),
+        // sourceImgEl = document.querySelector('.source-img'),
         addClassify = document.querySelector('.add-classify'),
         classifyItems = document.querySelector('.classify-items'),
         flowerBox = document.querySelector('.flower-box'),
@@ -252,35 +270,49 @@
         classifyItems.appendChild(div);
     }
 
-
     function nextImage() {
         var image = sourceImg.pop();
-        if (image.lastIndexOf('jpg') || image.lastIndexOf('png')) {
-            if (image) {
-                currentImg = image;
-                fs.readFile(path.join(sourceDir, image), (err, data) => {
-                    if (err) {
-                    } else {
-                        sourceImgEl.setAttribute('src', `data:image/png;base64,${data.toString('base64')}`);
+        if (image && (image.lastIndexOf('jpg') || image.lastIndexOf('png'))) {
+            currentImg = image;
+            fs.readFile(path.join(sourceDir, image), (err, data) => {
+                if (err) {
+                } else {
+                    if (sourceImgEl) {
+                        let oldImg = sourceImgEl;
+                        oldImg.style.left = '-100%';
+                        oldImg.style.opacity = '0';
+                        setTimeout(() => {
+                            boxLeft.removeChild(oldImg);
+                        }, 1000)
                     }
-                });
-            } else {
-                currentImg = '';
-                sourceImgEl.setAttribute('src', '');
-            }
+                    sourceImgEl = document.createElement('img');
+                    sourceImgEl.setAttribute('src', `data:image/png;base64,${data.toString('base64')}`);
+                    sourceImgEl.classList.add('source-img');
+                    boxLeft.appendChild(sourceImgEl);
+                }
+            });
+        } else if (image !== undefined) {
+            aw.info('图片格式不正确，自动跳过..');
+            currentImg = '';
+            sourceImgEl.setAttribute('src', '');
+        } else {
+            aw.info('图片已经分类完啦', 5000);
+            currentImg = '';
+            sourceImgEl.setAttribute('src', '');
         }
     }
 
     function loadDir(dirPath) {
         fs.readdir(dirPath, (err, data) => {
             if (err) {
-                console.log(err)
+                aw.warning('加载图片失败...')
             } else {
                 sourceImg = data;
                 sourceDir = dirPath;
                 nextImage();
                 flowerDirInfo.innerText = '请将目录拖放到此处';
                 flowerDirInfo.style.color = "rgba(0, 0, 0, .3)";
+                aw.info('加载图片成功...')
             }
         })
     }
@@ -296,6 +328,9 @@
             } else {
                 loadDir(tempDirPath)
             }
+            tempDirPath = '';
+        } else {
+            aw.warning('未指定目标文件夹')
         }
     }
 
