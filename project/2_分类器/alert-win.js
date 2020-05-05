@@ -45,10 +45,9 @@ window.onload = () => {
     class AlertWindow {
         constructor() {
             var
-                body = document.querySelector('body'),
                 box = document.createElement('div');
             box.classList.add('alert-box');
-            body.appendChild(box);
+            document.body.appendChild(box);
             this.box = box;
         }
 

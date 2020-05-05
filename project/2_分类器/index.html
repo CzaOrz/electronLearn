@@ -9,6 +9,12 @@
             margin: 0;
         }
 
+        body {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
         #classify-box {
             height: 100vh;
             width: 100vw;
@@ -23,11 +29,15 @@
         }
 
         .box-left {
-            width: calc(100% - 300px);
+            /*width: calc(100% - var(--right-width));*/
+            width: 100vw;
+            position: relative;
+            transition: width 1s ease;
         }
 
         .source-img {
-            max-width: calc(100% - 300px);
+            max-width: 90%;
+            max-height: 95%;
             position: absolute;
             left: 50%;
             top: 50%;
@@ -48,8 +58,10 @@
         }
 
         .box-right {
-            width: 300px;
+            width: 0;
             background-color: rgba(0, 0, 0, .3);
+            overflow: hidden;
+            transition: width 1s ease;
         }
 
         .add-classify-item {
@@ -61,7 +73,7 @@
         }
 
         .add-classify {
-            border: none;
+            border: 1px solid #FDD835;
             outline: none;
             text-decoration: none;
             background: linear-gradient(135deg, #81D4FA, #F48FB1, #81D4FA);
@@ -70,8 +82,7 @@
             height: 50px;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-position 1.5s ease,
-            color 0.5s ease;
+            transition: background-position 1s ease, color 0.5s ease;
             color: #fff;
             font-weight: bold;
             font-size: 15px;
@@ -192,13 +203,133 @@
             word-wrap: break-word;
             word-break: break-all;
         }
+
+        .bubble {
+            height: 60px;
+            width: 60px;
+            border-radius: 50%;
+            border: 1px solid #FCE4EC;
+            position: absolute;
+            animation: bubble 9s infinite;
+        }
+
+        .bubble:nth-of-type(2) {
+            animation-duration: 7s;
+            height: 50px;
+            width: 50px;
+            left: 20%;
+        }
+
+        .bubble:nth-of-type(3) {
+            animation-duration: 5s;
+            height: 30px;
+            width: 30px;
+            left: 30%;
+        }
+
+        @keyframes bubble {
+            from {
+                transform: translateX(0);
+                bottom: -100px;
+            }
+            50% {
+                transform: translateX(100px);
+            }
+            to {
+                transform: translateX(0);
+                bottom: 100vh;
+            }
+        }
     </style>
     <script src="./alert-win.js"></script>
+    <style>
+        .choice {
+            z-index: 2;
+            background-color: rgba(0, 0, 0, .4);
+            height: 50vh;
+            width: 50vw;
+            position: absolute;
+            transition: background-color 1s ease,
+            color 1s ease,
+            font-size 1s ease,
+            left 1s ease,
+            right 1s ease,
+            top 1s ease,
+            bottom 1s ease;
+            text-align: center;
+            line-height: 50vh;
+            color: rgba(255, 255, 255, .5);
+            font-size: 3vh;
+            font-weight: 900;
+            cursor: pointer;
+            opacity: .7;
+            border: 1px solid rgba(0,0,0,.1);
+            box-sizing: border-box;
+        }
+
+        .choice:nth-of-type(1) {
+            left: 0;
+            top: 0;
+        }
+
+        .choice1 {
+            left: -100% !important;
+            top: -100% !important;
+        }
+
+        .choice:nth-of-type(2) {
+            right: 0;
+            top: 0;
+        }
+
+        .choice2 {
+            right: -100% !important;
+            top: -100% !important;
+        }
+
+        .choice:nth-of-type(3) {
+            left: 0;
+            bottom: 0;
+        }
+
+        .choice3 {
+            left: -100% !important;
+            bottom: -100% !important;
+        }
+
+        .choice:nth-of-type(4) {
+            right: 0;
+            bottom: 0;
+        }
+
+        .choice4 {
+            right: -100% !important;
+            bottom: -100% !important;
+        }
+
+        .choice:hover {
+            background-color: rgba(255, 255, 255, .2);
+            color: rgba(0, 0, 0, .5);
+            font-size: 4vh;
+        }
+
+        .choice:active {
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
+
+<div class="choice">数字标注</div>
+<div class="choice">图片分类</div>
+<div class="choice">中文标注</div>
+<div class="choice">其他标注</div>
 <div id="classify-box">
     <div class="box-left">
         <!--        <img src="" alt="" class="source-img">-->
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
     </div>
     <div class="box-right">
         <div class="add-classify-item">
@@ -226,8 +357,33 @@
 </div>
 <script>
     var
+        isChoice = false,
+        boxRight = document.querySelector('.box-right'),
+        choices = document.querySelectorAll('.choice');
+
+    function hasChoice() {
+        if (isChoice === false) {
+            isChoice = true;
+            choices.forEach((choice, index) => {
+                choice.classList.add(`choice${index + 1}`)
+            });
+            boxLeft.style.width = 'calc(100vw - 300px)';
+            boxRight.style.width = '300px';
+        }
+    }
+
+    choices.forEach(choice => {
+        choice.addEventListener('click', () => {
+            setTimeout(hasChoice, 500);
+        })
+    })
+</script>
+
+<script>
+    var
         sourceDir = '',
         sourceImg = [],
+        imageRegex = /\.(jpg|png|jpeg)$/,
         sourceImgEl = '',
         currentImg = null,
         tempDirName = '',
@@ -264,6 +420,8 @@
                     path.join(sourceDir, currentImg),
                     path.join(dirPath, currentImg)
                 );
+            } else {
+                aw.warning('当前无可分类的图片');
             }
         };
         div.appendChild(btn);
@@ -272,7 +430,8 @@
 
     function nextImage() {
         var image = sourceImg.pop();
-        if (image && (image.lastIndexOf('jpg') || image.lastIndexOf('png'))) {
+        console.log(image);
+        if (image && imageRegex.test(image)) {
             currentImg = image;
             fs.readFile(path.join(sourceDir, image), (err, data) => {
                 if (err) {
@@ -293,12 +452,13 @@
             });
         } else if (image !== undefined) {
             aw.info('图片格式不正确，自动跳过..');
-            currentImg = '';
-            sourceImgEl.setAttribute('src', '');
+            // currentImg = '';
+            // if (sourceImgEl) sourceImgEl.setAttribute('src', '');
+            nextImage();
         } else {
-            aw.info('图片已经分类完啦', 5000);
+            aw.info('文件夹已经没有可分类的咯哦', 5000);
             currentImg = '';
-            sourceImgEl.setAttribute('src', '');
+            if (sourceImgEl) sourceImgEl.setAttribute('src', '');
         }
     }
 
