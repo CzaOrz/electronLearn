@@ -1,11 +1,18 @@
 {
   "name": "elelearn",
   "version": "1.0.0",
+  "description": "None thing to say...",
+  "author": "CzaOrz",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "package": "electron-packager ./ --all --out ~/Desktop/app --version 1.4.0 --overwrite --icon=./src/img/weather.ico"
   },
   "dependencies": {
-    "electron": "^8.2.3"
+  },
+  "build": {
+    "appId": "marker"
   }
 }
