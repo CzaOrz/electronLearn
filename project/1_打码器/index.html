@@ -53,6 +53,43 @@
         .add-box:hover {
             color: #90A4AE;
         }
+
+        .bubble {
+            height: 60px;
+            width: 60px;
+            border-radius: 50%;
+            border: 1px solid #FCE4EC;
+            position: absolute;
+            animation: bubble 9s infinite;
+        }
+
+        .bubble2 {
+            animation-duration: 7s;
+            height: 50px;
+            width: 50px;
+            left: 20%;
+        }
+
+        .bubble3 {
+            animation-duration: 5s;
+            height: 30px;
+            width: 30px;
+            left: 30%;
+        }
+
+        @keyframes bubble {
+            from {
+                transform: translateX(0);
+                bottom: -100px;
+            }
+            50% {
+                transform: translateX(100px);
+            }
+            to {
+                transform: translateX(0);
+                bottom: 100vh;
+            }
+        }
     </style>
     <!-- 顶部选择菜单 -->
     <style>
@@ -159,6 +196,50 @@
             transform: scale(1.1) scale(0.5);
         }
     </style>
+    <!-- 打码器 -->
+    <style>
+        .code-box {
+            position: absolute;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .code-top {
+            height: 70%;
+            top: 0;
+            transition: top 1s ease;
+        }
+
+        .code-bottom {
+            height: 30%;
+            bottom: 0;
+            transition: bottom 1s ease;
+            background-color: rgba(0, 0, 0, .3);
+        }
+        .code-items{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 30vh;
+            text-align: center;
+        }
+        .code-item{
+            flex: 1;
+        }
+        .code-item-btn{
+            line-height: 4vh;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+            transition: transform 1s ease;
+            background-color: rgba(255,255,255,.7);
+        }
+        .code-item-btn:active{
+            transform: scale(.8);
+        }
+    </style>
     <!-- 分类器 -->
     <style>
         .classify-box {
@@ -257,7 +338,6 @@
             animation-fill-mode: backwards;
             position: relative;
             left: 0;
-            /*pointer-events: none;*/
         }
 
         .classify-item:before {
@@ -267,7 +347,6 @@
             height: 100%;
             left: -80px;
             background-color: #E57373;
-            /*pointer-events: auto;*/
         }
 
         .classify-item:hover {
@@ -367,6 +446,11 @@
 <div class="top-menu">图片分类</div>
 <div class="top-menu">滑块标注</div>
 <div class="top-menu">点选标注</div>
+
+<!-- 背景泡泡 -->
+<div class="bubble bubble1"></div>
+<div class="bubble bubble2"></div>
+<div class="bubble bubble3"></div>
 <div id="top-menu-btn" class="top-menu-btn-static" draggable="true"></div>
 <script>
     var
@@ -433,6 +517,19 @@
     })
 </script>
 <!-- 打码器 -->
+<div class="code-box code-top">
+    <div class="add-box classify-left-add-box"></div>
+</div>
+<div class="code-box code-bottom">
+    <div class="code-items">
+        <div class="code-item">
+            <button class="code-item-btn">请选择忽略路径</button>
+        </div>
+        <div class="code-item">
+            <button class="code-item-btn">请选择保存路径</button>
+        </div>
+    </div>
+</div>
 
 <!-- 分类器 -->
 <div class="classify-box classify-left">
@@ -442,14 +539,7 @@
     <div class="add-classify-item">
         <button class="add-classify">添加分类</button>
     </div>
-    <div class="classify-items">
-        <div class="classify-item">
-            <button class="classify-btn">工商注册证</button>
-        </div>
-        <div class="classify-item">
-            <button class="classify-btn">工商注册证</button>
-        </div>
-    </div>
+    <div class="classify-items"></div>
 </div>
 <div class="flower-box">
     <div class="flower-classify">
@@ -539,9 +629,20 @@
 
         function itemMove(e) {
             e.preventDefault();
-            if (0 <= lastPosition && lastPosition <= 80) {
-                div.style.left = `${lastPosition + e.movementX}px`;
+            currenPosition = lastPosition + e.movementX;
+            if ((0 <= currenPosition && currenPosition <= 80) && (0 <= lastPosition && lastPosition <= 80)) {
+                div.style.left = `${currenPosition}px`;
                 lastPosition = parseInt(div.style.left) || 0;
+                moveEvent = e;
+            }
+        }
+
+        function checkMove() {
+            div.style.transition = 'background-color 1.2s ease, left 1s ease';
+            if (lastPosition > 30) {
+                div.style.left = '80px';
+            } else {
+                div.style.left = '0';
             }
         }
 
@@ -549,20 +650,23 @@
         div.addEventListener('mousedown', e => {
             e.preventDefault();
             lastPosition = parseInt(div.style.left) || 0;
+            div.style.transition = 'background-color 1.2s ease';
             div.addEventListener('mousemove', itemMove);
         });
         div.addEventListener('mouseup', e => {
             e.preventDefault();
             div.removeEventListener('mousemove', itemMove);
+            checkMove(e);
         });
         div.addEventListener('mouseleave', e => {
             e.preventDefault();
             div.removeEventListener('mousemove', itemMove);
+            checkMove(e);
         });
         div.addEventListener('click', e => {
             e.preventDefault();
             if (e.offsetX < 0) {
-                aw.warning('要删除元素嘛')
+                aw.warning('要删除按钮嘛，暂时不支持哦~', 3000);
             }
         });
         btn.classList.add('classify-btn');
