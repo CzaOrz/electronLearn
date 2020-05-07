@@ -5,4 +5,5 @@
 // require('./series/5_系统托盘/index');
 // require('./series/6_session/index');
 
-require('./project/2_分类器/index');
+require('./project/1_打码器/index');
+// require('./project/2_分类器/index');
