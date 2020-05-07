@@ -1,37 +1,27 @@
 var {
         app,
         BrowserWindow,
-        dialog
+        dialog,
+        Menu
     } = require('electron'),
-    path = require('path'),
-    fs = require('fs');
+    path = require('path');
 
-
-if (!app.requestSingleInstanceLock()) app.quit();
+if (!app.requestSingleInstanceLock()) {
+    dialog.showErrorBox('', '仅允许开启一个');
+    app.quit()
+}
 
 app.on('ready', () => {
     var win = new BrowserWindow({
-        height: 300,
-        width: 800,
+        height: 900,
+        width: 1200,
         webPreferences: {
             nodeIntegration: true
-        }
+        },
     });
     win.loadFile(path.join(__dirname, 'index.html'));
-    const menu = Menu.buildFromTemplate([
-        {
-            label: '设置',
-            submenu: [
-                {
-                    label: '指定输入',
-                    check(){}
-                },
-                {
-                    label: '指定输出'
-                }
-            ]
-        }
-    ]);
+    Menu.setApplicationMenu(null);
+    // win.webContents.openDevTools();
 });
 
 app.on('window-all-closed', () => {
