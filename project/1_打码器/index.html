@@ -26,28 +26,30 @@
             left: 50%;
             transform: translate(-50%, -50%);
             transition: color 1s ease, opacity 1s ease;
+            width: 50%;
+            height: 50%;
+            max-height: 300px;
+            max-width: 300px;
+        }
+
+        .add-box:before, .add-box:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .add-box:before {
-            content: '';
             border-top: 10px solid;
             width: 40%;
             max-width: 100px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
         }
 
         .add-box:after {
-            content: '';
             border-left: 10px solid;
             height: 40%;
             max-height: 100px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
         }
 
         .add-box:hover {
@@ -217,12 +219,6 @@
             transition: top 1s ease;
         }
 
-        .code-top-add-box {
-            height: 50%;
-            width: 50%;
-            cursor: pointer;
-        }
-
         .code-bottom {
             height: 30%;
             bottom: -100%;
@@ -255,6 +251,10 @@
             cursor: pointer;
             transition: transform 1s ease, background-color 1s ease;
             background-color: rgba(255, 255, 255, .7);
+        }
+
+        .code-item-btn:active {
+            transform: scale(.5);
         }
 
         .code-box-item {
@@ -365,12 +365,6 @@
             right: -100%;
             background-color: rgba(0, 0, 0, .3);
             transition: right 1s ease;
-        }
-
-        .classify-left-add-box {
-            height: 50%;
-            width: 50%;
-            cursor: pointer;
         }
 
         .classify-image {
@@ -600,18 +594,23 @@
     topMenus.forEach((menu, index) => {
         menu.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             if (hasChoiceBool) return;
             hasChoiceBool = true;
             switch (index) {
                 case 0:
                     hasChoice = index;
-                    codeTop.style.top = '0';
-                    codeBottom.style.bottom = '0';
+                    setTimeout(() => {
+                        codeTop.style.top = '0';
+                        codeBottom.style.bottom = '0';
+                    }, 400);
                     break;
                 case 1:
                     hasChoice = index;
-                    classifyLeft.style.left = '0';
-                    classifyRight.style.right = '0';
+                    setTimeout(() => {
+                        classifyLeft.style.left = '0';
+                        classifyRight.style.right = '0';
+                    }, 400);
                     break;
             }
             setTimeout(addChoice, 300);
@@ -665,7 +664,8 @@
         codeImageEl = null,
         codeLabelEl = null,
         codeInputEl = null,
-        codeTop = document.querySelector('.code-box'),
+        codeImageName = '',
+        codeTop = document.querySelector('.code-top'),
         codeItems = document.querySelector('.code-items'),
         codeBottom = document.querySelector('.code-bottom'),
         codeClear = document.querySelector('.code-clear'),
@@ -720,6 +720,10 @@
                     if (codeImageName) codeInputEl.value = codeImageName;
                     codeLabelEl.appendChild(codeInputEl);
                     codeTopRight.appendChild(codeLabelEl);
+                    setTimeout(() => {
+                        var inputs = document.querySelectorAll('.code-input');
+                        if (inputs.length) inputs[inputs.length - 1].focus();
+                    }, 200);
                 }
             });
         } else if (image !== undefined) {
@@ -800,10 +804,10 @@
             flowerDirInfo.style.color = "rgba(0, 0, 0, .3)";
             btnEl.removeEventListener('click', initClickFunc);
             bindCodeBtn(btnEl, tempDirPath, tempDirName || btnName);
+            tempDirPath = '';
         } else {
             aw.warning('未指定目标文件夹/按钮名称')
         }
-        tempDirPath = '';
         tempDirName = '';
     }
 
@@ -839,6 +843,11 @@
 
     codeBtnPass.addEventListener('click', initBtnPassClick);
     codeBtnSave.addEventListener('click', initBtnSaveClick);
+    codeTop.addEventListener('keyup', e => {
+        if (e.key.toLowerCase() === 'enter') {
+            codeBtnSave.click();
+        }
+    });
 
     function createNewCodeItems() {
         var
@@ -846,10 +855,10 @@
             btnLeft = document.createElement('button'),
             divRight = document.createElement('div'),
             btnRight = document.createElement('button');
-        codeBtnPass = btnRight;
+        codeBtnPass = btnLeft;
         codeBtnPass.addEventListener('click', initBtnPassClick);
-        codeBtnSave = btnLeft;
-        codeBtnPass.addEventListener('click', initBtnPassClick);
+        codeBtnSave = btnRight;
+        codeBtnSave.addEventListener('click', initBtnSaveClick);
 
         divLeft.classList.add('code-item');
         btnLeft.classList.add('code-item-btn', 'code-btn-pass');
