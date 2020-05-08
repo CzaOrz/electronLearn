@@ -185,7 +185,7 @@
             padding: 7px;
             background-color: #ffffff;
             opacity: 0;
-            z-index: 1;
+            z-index: 3;
             background-clip: content-box;
             cursor: pointer;
         }
@@ -592,7 +592,7 @@
         classifyLeft = document.querySelector('.classify-left'),
         classifyRight = document.querySelector('.classify-right');
     var
-        {dialog, getCurrentWindow} = require('electron').remote,
+        // {dialog, getCurrentWindow} = require('electron').remote,
         fs = require('fs'),
         path = require('path');
 </script>
@@ -1039,14 +1039,14 @@
         e.preventDefault();
         e.stopPropagation();
     });
-    classifyLeftAddBox.addEventListener('click', () => {
-        dialog.showOpenDialog(getCurrentWindow(), {
-            properties: ['openDirectory']
-        }).then(result => {
-            dirPath = result.filePaths[0];
-            loadClassifyDir(dirPath);
-        })
-    });
+    // classifyLeftAddBox.addEventListener('click', () => {
+    //     dialog.showOpenDialog(getCurrentWindow(), {
+    //         properties: ['openDirectory']
+    //     }).then(result => {
+    //         dirPath = result.filePaths[0];
+    //         loadClassifyDir(dirPath);
+    //     })
+    // });
     flowerDir.addEventListener('drop', e => {
         e.preventDefault();
         e.stopPropagation();

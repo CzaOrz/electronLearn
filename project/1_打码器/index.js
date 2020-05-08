@@ -21,7 +21,7 @@ app.on('ready', () => {
     });
     win.loadFile(path.join(__dirname, 'index.html'));
     Menu.setApplicationMenu(null);
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
 });
 
 app.on('window-all-closed', () => {
