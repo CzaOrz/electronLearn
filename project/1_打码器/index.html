@@ -552,13 +552,16 @@
 <div class="bubble bubble2"></div>
 <div class="bubble bubble3"></div>
 <div class="bubble bubble4"></div>
-<div id="top-menu-btn" class="top-menu-btn-static" draggable="true"></div>
+<div id="top-menu-btn" class="top-menu-btn-static">
+    <!--    draggable="true"-->
+</div>
 <script>
     var
         codeTop = null,
         codeBottom = null,
         hasChoice = null,
         hasChoiceBool = false,
+        isDragging = false,
         imageRegex = /\.(jpg|png|jpeg)$/,
         imageNameRegex = /(.*?)_/,
         topMenus = document.querySelectorAll('.top-menu'),
@@ -621,6 +624,8 @@
     };
     topMenuBtn.ondragend = function (e) {
         this.classList.add('top-menu-btn-static');
+    };
+    topMenuBtn.ondrag = function (e) {
         topMenuBtn.style.left = `${e.clientX - 26}px`;
         topMenuBtn.style.top = `${e.clientY - 26}px`;
     };
