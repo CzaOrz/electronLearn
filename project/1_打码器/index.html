@@ -846,6 +846,11 @@
             btnLeft = document.createElement('button'),
             divRight = document.createElement('div'),
             btnRight = document.createElement('button');
+        codeBtnPass = btnRight;
+        codeBtnPass.addEventListener('click', initBtnPassClick);
+        codeBtnSave = btnLeft;
+        codeBtnPass.addEventListener('click', initBtnPassClick);
+
         divLeft.classList.add('code-item');
         btnLeft.classList.add('code-item-btn', 'code-btn-pass');
         btnLeft.innerText = '请选择忽略路径';
