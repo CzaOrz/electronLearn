@@ -77,6 +77,13 @@
             left: 30%;
         }
 
+        .bubble4 {
+            animation-duration: 8s;
+            height: 60px;
+            width: 60px;
+            left: 60%;
+        }
+
         @keyframes bubble {
             from {
                 transform: translateX(0);
@@ -206,38 +213,137 @@
 
         .code-top {
             height: 70%;
-            top: 0;
+            top: -100%;
             transition: top 1s ease;
+        }
+
+        .code-top-add-box {
+            height: 50%;
+            width: 50%;
+            cursor: pointer;
         }
 
         .code-bottom {
             height: 30%;
-            bottom: 0;
+            bottom: -100%;
             transition: bottom 1s ease;
             background-color: rgba(0, 0, 0, .3);
         }
-        .code-items{
+
+        .code-items {
             display: flex;
             align-items: center;
             justify-content: center;
             line-height: 30vh;
             text-align: center;
         }
-        .code-item{
+
+        .code-item {
             flex: 1;
+            transition: transform 1s ease;
+            animation: fadeIn 1s;
         }
-        .code-item-btn{
+
+        .code-item-btn {
+            display: inline-block;
+            width: 10em;
             line-height: 4vh;
             border: none;
             padding: 10px;
             border-radius: 5px;
             outline: none;
             cursor: pointer;
-            transition: transform 1s ease;
-            background-color: rgba(255,255,255,.7);
+            transition: transform 1s ease, background-color 1s ease;
+            background-color: rgba(255, 255, 255, .7);
         }
-        .code-item-btn:active{
-            transform: scale(.8);
+
+        .code-box-item {
+            width: 50%;
+            height: 100%;
+            top: 0;
+            position: absolute;
+        }
+
+        .code-top-left {
+            left: 0;
+        }
+
+        .code-top-right {
+            right: 0;
+        }
+
+        .code-label {
+            position: absolute;
+            top: 50%;
+            right: 50%;
+            transform: translate(50%, -50%);
+            transition: right 1s ease, opacity 1s ease;
+        }
+
+        .code-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-height: 10vh;
+            max-width: 90%;
+            max-height: 95%;
+            animation: fadeIn 1s;
+            animation-fill-mode: backwards;
+            transition: left 1s ease, opacity 1s ease;
+        }
+
+        .code-input {
+            display: inline-block;
+            outline: none;
+            border: none;
+            background-color: rgba(0, 0, 0, .3);
+            line-height: 10vh;
+            max-width: 40vw;
+            font-size: 3vh;
+            text-align: center;
+            border-radius: 7px;
+            animation: fadeIn 1s;
+            animation-fill-mode: backwards;
+        }
+
+        .code-clear {
+            position: absolute;
+            height: 30px;
+            width: 30px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, .8);
+            top: 2vh;
+            right: 2vw;
+            transition: transform 1s ease;
+            cursor: pointer;
+        }
+
+        .code-clear:before, .code-clear:after {
+            content: '';
+            position: absolute;
+            height: 20px;
+            width: 5px;
+            border-radius: 5px;
+            background-color: #607D8B;
+            top: 50%;
+            left: 50%;
+        }
+
+        .code-clear:before {
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        .code-clear:after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+
+        .code-clear:hover {
+            transform: scale(1.1);
+        }
+
+        .code-clear:active {
+            transform: scale(0.5);
         }
     </style>
     <!-- 分类器 -->
@@ -306,7 +412,7 @@
             height: 50px;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-position 1s ease, color 1s ease;
+            transition: background-position 1s ease, color 1s ease, transform 1s ease;
             color: #fff;
             font-weight: bold;
             font-size: 15px;
@@ -318,7 +424,7 @@
         }
 
         .add-classify:active {
-            transform: translateY(-1.5px);
+            transform: scale(.6);
         }
 
         .classify-items {
@@ -451,11 +557,16 @@
 <div class="bubble bubble1"></div>
 <div class="bubble bubble2"></div>
 <div class="bubble bubble3"></div>
+<div class="bubble bubble4"></div>
 <div id="top-menu-btn" class="top-menu-btn-static" draggable="true"></div>
 <script>
     var
+        codeTop = null,
+        codeBottom = null,
         hasChoice = null,
         hasChoiceBool = false,
+        imageRegex = /\.(jpg|png|jpeg)$/,
+        imageNameRegex = /(.*?)_/,
         topMenus = document.querySelectorAll('.top-menu'),
         topMenuBtn = document.querySelector('#top-menu-btn'),
         addChoice = () => {
@@ -466,6 +577,8 @@
             if (hasChoice !== null) {
                 switch (hasChoice) {
                     case 0:
+                        codeTop.style.top = '-100%';
+                        codeBottom.style.bottom = '-100%';
                         break;
                     case 1:
                         classifyLeft.style.left = '-100%';
@@ -490,6 +603,11 @@
             if (hasChoiceBool) return;
             hasChoiceBool = true;
             switch (index) {
+                case 0:
+                    hasChoice = index;
+                    codeTop.style.top = '0';
+                    codeBottom.style.bottom = '0';
+                    break;
                 case 1:
                     hasChoice = index;
                     classifyLeft.style.left = '0';
@@ -518,19 +636,243 @@
 </script>
 <!-- 打码器 -->
 <div class="code-box code-top">
-    <div class="add-box classify-left-add-box"></div>
+    <div class="code-box-item code-top-left">
+        <!--        <img class="code-image" src="" alt="">-->
+    </div>
+    <div class="code-box-item code-top-right">
+        <!--        <label class="code-label">-->
+        <!--            <input type="text" class="code-input">-->
+        <!--        </label>-->
+    </div>
+    <div class="add-box code-top-add-box"></div>
 </div>
 <div class="code-box code-bottom">
+    <div class="code-clear"></div>
     <div class="code-items">
         <div class="code-item">
-            <button class="code-item-btn">请选择忽略路径</button>
+            <button class="code-item-btn code-btn-pass">请选择忽略路径</button>
         </div>
         <div class="code-item">
-            <button class="code-item-btn">请选择保存路径</button>
+            <button class="code-item-btn code-btn-save">请选择保存路径</button>
         </div>
     </div>
 </div>
+<script>
+    var
+        codeImage = '',
+        codeImages = [],
+        codeDirPath = '',
+        codeImageEl = null,
+        codeLabelEl = null,
+        codeInputEl = null,
+        codeTop = document.querySelector('.code-box'),
+        codeItems = document.querySelector('.code-items'),
+        codeBottom = document.querySelector('.code-bottom'),
+        codeClear = document.querySelector('.code-clear'),
+        codeTopLeft = document.querySelector('.code-top-left'),
+        codeTopRight = document.querySelector('.code-top-right'),
+        codeBtnPass = document.querySelector('.code-btn-pass'),
+        codeBtnSave = document.querySelector('.code-btn-save'),
+        codeTopAddBox = document.querySelector('.code-top-add-box');
 
+    function removeEl(father, el, direction) {
+        if (el) {
+            let oldEl = el;
+            oldEl.style[direction] = '-50%';
+            oldEl.style.opacity = '0';
+            setTimeout(() => {
+                father.removeChild(oldEl);
+            }, 1000);
+        }
+    }
+
+    function removeCodeEl(imageEl, labelEl) {
+        removeEl(codeTopLeft, imageEl, 'left');
+        removeEl(codeTopRight, labelEl, 'right');
+    }
+
+    function nextCodeImage() {
+        var image = codeImages.pop();
+        if (image && imageRegex.test(image)) {
+            codeImage = image;
+            try {
+                codeImageName = imageNameRegex.exec(codeImage)[1];
+            } catch (e) {
+                codeImageName = '';
+            }
+            codeTopAddBox.style.opacity = '0';
+            codeTopAddBox.style.zIndex = '-1';
+            fs.readFile(path.join(codeDirPath, codeImage), (err, data) => {
+                if (err) {
+                    aw.warning('图片读取失败...')
+                } else {
+                    removeCodeEl(codeImageEl, codeLabelEl);
+
+                    codeImageEl = document.createElement('img');
+                    codeImageEl.setAttribute('src', `data:image/png;base64,${data.toString('base64')}`);
+                    codeImageEl.classList.add('code-image');
+                    codeTopLeft.appendChild(codeImageEl);
+
+                    codeLabelEl = document.createElement('label');
+                    codeLabelEl.classList.add('code-label');
+                    codeInputEl = document.createElement('input');
+                    codeInputEl.classList.add('code-input');
+                    if (codeImageName) codeInputEl.value = codeImageName;
+                    codeLabelEl.appendChild(codeInputEl);
+                    codeTopRight.appendChild(codeLabelEl);
+                }
+            });
+        } else if (image !== undefined) {
+            aw.info('图片格式不正确，自动跳过..');
+            setTimeout(nextCodeImage, 60);
+        } else {
+            aw.info('文件夹已经没有可分类的咯哦', 5000);
+            codeImage = '';
+            codeTopAddBox.style.opacity = '1';
+            codeTopAddBox.style.zIndex = '1';
+            removeCodeEl(codeImageEl, codeLabelEl);
+        }
+    }
+
+    function loadCodeDir(dirPath) {
+        fs.readdir(dirPath, (err, images) => {
+            if (err) {
+                aw.warning('导入目录失败...', 2000);
+            } else {
+                codeImageEl = null;
+                codeLabelEl = null;
+                codeInputEl = null;
+                codeImages = images;
+                codeDirPath = dirPath;
+                nextCodeImage();
+                aw.info('加载成功...');
+            }
+        })
+    }
+
+    codeTopAddBox.addEventListener('drop', e => {
+        e.preventDefault();
+        var files = e.dataTransfer.files;
+        if (files.length) {
+            var dirPath = files[0].path;
+            loadCodeDir(dirPath);
+        }
+    });
+    codeTopAddBox.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+    /*
+    * 点击功能暂时不需要
+    * */
+    // codeTopAddBox.addEventListener('click', () => {
+    //     dialog.showOpenDialog(getCurrentWindow(), {
+    //         properties: ['openDirectory']
+    //     }).then(result => {
+    //         dirPath = result.filePaths[0];
+    //         loadCodeDir(dirPath);
+    //     })
+    // });
+
+    function bindCodeBtn(btnEl, dirPath, btnName) {
+        if (btnName) btnEl.innerText = btnName;
+        btnEl.addEventListener('click', () => {
+            newCodeImage = codeImage;
+            if (codeImageName && codeInputEl.value) newCodeImage = codeImage.replace(codeImageName, codeInputEl.value);
+            if (codeImage) {
+                fs.rename(
+                    path.join(codeDirPath, codeImage),
+                    path.join(dirPath, newCodeImage),
+                    () => nextCodeImage()
+                );
+            } else {
+                aw.warning('当前无可分类的图片');
+            }
+        });
+        btnEl.style.backgroundColor = '#FFF9C4';
+    }
+
+    function checkCodeFlower(btnEl, btnName, initClickFunc) {
+        if (tempDirPath) {
+            tempDirName = flowerClassifyInput.value;
+            flowerClassifyInput.value = '';
+            flowerDirInfo.innerText = '请将目录拖放到此处';
+            flowerDirInfo.style.color = "rgba(0, 0, 0, .3)";
+            btnEl.removeEventListener('click', initClickFunc);
+            bindCodeBtn(btnEl, tempDirPath, tempDirName || btnName);
+        } else {
+            aw.warning('未指定目标文件夹/按钮名称')
+        }
+        tempDirPath = '';
+        tempDirName = '';
+    }
+
+    function initBtnPassClick(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        switch (flowerBox.style.top) {
+            case '':
+            case '-100%':
+                flowerBox.style.top = '50%';
+                break;
+            case '50%':
+                flowerBox.style.top = '-100%';
+                checkCodeFlower(codeBtnPass, '忽略', initBtnPassClick);
+                break;
+        }
+    }
+
+    function initBtnSaveClick(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        switch (flowerBox.style.top) {
+            case '':
+            case '-100%':
+                flowerBox.style.top = '50%';
+                break;
+            case '50%':
+                flowerBox.style.top = '-100%';
+                checkCodeFlower(codeBtnSave, '保存', initBtnSaveClick);
+                break;
+        }
+    }
+
+    codeBtnPass.addEventListener('click', initBtnPassClick);
+    codeBtnSave.addEventListener('click', initBtnSaveClick);
+
+    function createNewCodeItems() {
+        var
+            divLeft = document.createElement('div'),
+            btnLeft = document.createElement('button'),
+            divRight = document.createElement('div'),
+            btnRight = document.createElement('button');
+        divLeft.classList.add('code-item');
+        btnLeft.classList.add('code-item-btn', 'code-btn-pass');
+        btnLeft.innerText = '请选择忽略路径';
+        divLeft.appendChild(btnLeft);
+
+        divRight.classList.add('code-item');
+        btnRight.classList.add('code-item-btn', 'code-btn-pass');
+        btnRight.innerText = '请选择保存路径';
+        divRight.appendChild(btnRight);
+
+        codeItems.appendChild(divLeft);
+        codeItems.appendChild(divRight);
+    }
+
+    codeClear.addEventListener('click', () => {
+        var _codeItems = document.querySelectorAll('.code-item');
+        _codeItems.forEach(item => {
+            item.style.transform = 'translateY(100%)';
+        });
+        setTimeout(() => {
+            _codeItems.forEach(item => {
+                codeItems.removeChild(item);
+            });
+            createNewCodeItems();
+        }, 1000);
+    });
+</script>
 <!-- 分类器 -->
 <div class="classify-box classify-left">
     <div class="add-box classify-left-add-box"></div>
@@ -559,7 +901,6 @@
         classifyImages = [],
         classifyDirPath = '',
         classifyImageEl = null,
-        imageRegex = /\.(jpg|png|jpeg)$/,
         classifyLeft = document.querySelector('.classify-left'),
         classifyRight = document.querySelector('.classify-right'),
         classifyLeftAddBox = document.querySelector('.classify-left-add-box'),
@@ -570,7 +911,7 @@
         flowerClassifyInput = document.querySelector('.flower-classify-input'),
         classifyItems = document.querySelector('.classify-items');
 
-    function removeImage(image) {
+    function removeClassifyImage(image) {
         if (image) {
             let oldImg = image;
             oldImg.style.left = '-100%';
@@ -581,7 +922,7 @@
         }
     }
 
-    function nextImage() {
+    function nextClassifyImage() {
         var image = classifyImages.pop();
         if (image && imageRegex.test(image)) {
             classifyImage = image;
@@ -590,7 +931,7 @@
                 if (err) {
                     aw.warning('图片读取失败...')
                 } else {
-                    removeImage(classifyImageEl);
+                    removeClassifyImage(classifyImageEl);
                     classifyImageEl = document.createElement('img');
                     classifyImageEl.setAttribute('src', `data:image/png;base64,${data.toString('base64')}`);
                     classifyImageEl.classList.add('classify-image');
@@ -599,23 +940,23 @@
             });
         } else if (image !== undefined) {
             aw.info('图片格式不正确，自动跳过..');
-            setTimeout(nextImage, 60);
+            setTimeout(nextClassifyImage, 60);
         } else {
             aw.info('文件夹已经没有可分类的咯哦', 5000);
             classifyImage = '';
             classifyLeftAddBox.style.opacity = '1';
-            removeImage(classifyImageEl);
+            removeClassifyImage(classifyImageEl);
         }
     }
 
-    function loadDir(dirPath) {
+    function loadClassifyDir(dirPath) {
         fs.readdir(dirPath, (err, images) => {
             if (err) {
                 aw.warning('导入目录失败...', 2000);
             } else {
                 classifyImages = images;
                 classifyDirPath = dirPath;
-                nextImage();
+                nextClassifyImage();
                 aw.info('加载成功...');
             }
         })
@@ -676,7 +1017,7 @@
                 fs.rename(
                     path.join(classifyDirPath, classifyImage),
                     path.join(dirPath, classifyImage),
-                    () => nextImage()
+                    () => nextClassifyImage()
                 );
             } else {
                 aw.warning('当前无可分类的图片');
@@ -691,7 +1032,7 @@
         var files = e.dataTransfer.files;
         if (files.length) {
             var dirPath = files[0].path;
-            loadDir(dirPath);
+            loadClassifyDir(dirPath);
         }
     });
     classifyLeftAddBox.addEventListener('dragover', e => {
@@ -703,7 +1044,7 @@
             properties: ['openDirectory']
         }).then(result => {
             dirPath = result.filePaths[0];
-            loadDir(dirPath);
+            loadClassifyDir(dirPath);
         })
     });
     flowerDir.addEventListener('drop', e => {
@@ -727,10 +1068,10 @@
             flowerDirInfo.innerText = '请将目录拖放到此处';
             flowerDirInfo.style.color = "rgba(0, 0, 0, .3)";
             newClassifyBtn(tempDirName, tempDirPath);
+            tempDirPath = '';
         } else {
             aw.warning('未指定目标文件夹/按钮名称')
         }
-        tempDirPath = '';
         tempDirName = '';
     }
 
