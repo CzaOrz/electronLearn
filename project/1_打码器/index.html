@@ -99,6 +99,22 @@
                 bottom: 100vh;
             }
         }
+
+        .top-in-zero {
+            transform: translateY(0) !important;
+        }
+
+        .bottom-in-zero {
+            transform: translateY(0) !important;
+        }
+
+        .left-in-zero {
+            transform: translateY(0) !important;
+        }
+
+        .right-in-zero {
+            transform: translateY(0) !important;
+        }
     </style>
     <!-- 顶部选择菜单 -->
     <style>
@@ -114,7 +130,8 @@
             left 1s ease,
             right 1s ease,
             top 1s ease,
-            bottom 1s ease;
+            bottom 1s ease,
+            transform 1s ease;
             text-align: center;
             line-height: 50vh;
             color: rgba(255, 255, 255, .5);
@@ -132,8 +149,7 @@
         }
 
         .choice1 {
-            left: -100% !important;
-            top: -100% !important;
+            transform: translate(-100%, -100%);
         }
 
         .top-menu:nth-of-type(2) {
@@ -142,8 +158,7 @@
         }
 
         .choice2 {
-            right: -100% !important;
-            top: -100% !important;
+            transform: translate(100%, -100%);
         }
 
         .top-menu:nth-of-type(3) {
@@ -152,8 +167,7 @@
         }
 
         .choice3 {
-            left: -100% !important;
-            bottom: -100% !important;
+            transform: translate(-100%, 100%);
         }
 
         .top-menu:nth-of-type(4) {
@@ -162,8 +176,7 @@
         }
 
         .choice4 {
-            right: -100% !important;
-            bottom: -100% !important;
+            transform: translate(100%, 100%);
         }
 
         .top-menu:hover {
@@ -215,14 +228,16 @@
 
         .code-top {
             height: 70%;
-            top: -100%;
-            transition: top 1s ease;
+            top: 0;
+            transform: translateY(-100%);
+            transition: transform 1s ease;
         }
 
         .code-bottom {
             height: 30%;
-            bottom: -100%;
-            transition: bottom 1s ease;
+            bottom: 0;
+            transform: translateY(100%);
+            transition: transform 1s ease;
             background-color: rgba(0, 0, 0, .3);
         }
 
@@ -277,7 +292,7 @@
             top: 50%;
             right: 50%;
             transform: translate(50%, -50%);
-            transition: right 1s ease, opacity 1s ease;
+            transition: transform 1s ease, opacity 1s ease;
         }
 
         .code-image {
@@ -290,7 +305,7 @@
             max-height: 95%;
             animation: fadeIn 1s;
             animation-fill-mode: backwards;
-            transition: left 1s ease, opacity 1s ease;
+            transition: transform 1s ease, opacity 1s ease;
         }
 
         .code-input {
@@ -356,15 +371,17 @@
 
         .classify-left {
             width: calc(100vw - 300px);
-            left: -100%;
-            transition: left 1s ease;
+            left: 0;
+            transform: translateX(-100%);
+            transition: transform 1s ease;
         }
 
         .classify-right {
             width: 300px;
-            right: -100%;
+            right: 0;
+            transform: translateX(100%);
             background-color: rgba(0, 0, 0, .3);
-            transition: right 1s ease;
+            transition: transform 1s ease;
         }
 
         .classify-image {
@@ -376,8 +393,7 @@
             transform: translate(-50%, -50%);
             animation: fadeIn 1s;
             animation-fill-mode: backwards;
-            transition: opacity 1s ease,
-            left 1s ease;
+            transition: opacity 1s ease, transform 1s ease;
         }
 
         @keyframes fadeIn {
@@ -561,7 +577,6 @@
         codeBottom = null,
         hasChoice = null,
         hasChoiceBool = false,
-        isDragging = false,
         imageRegex = /\.(jpg|png|jpeg)$/,
         imageNameRegex = /(.*?)_/,
         topMenus = document.querySelectorAll('.top-menu'),
@@ -574,12 +589,16 @@
             if (hasChoice !== null) {
                 switch (hasChoice) {
                     case 0:
-                        codeTop.style.top = '-100%';
-                        codeBottom.style.bottom = '-100%';
+                        // codeTop.style.top = '-100%';
+                        // codeBottom.style.bottom = '-100%';
+                        codeTop.classList.remove('top-in-zero');
+                        codeBottom.classList.remove('bottom-in-zero');
                         break;
                     case 1:
-                        classifyLeft.style.left = '-100%';
-                        classifyRight.style.right = '-100%';
+                        // classifyLeft.style.left = '-100%';
+                        // classifyRight.style.right = '-100%';
+                        classifyLeft.classList.remove('left-in-zero');
+                        classifyRight.classList.remove('right-in-zero');
                         break;
                 }
                 hasChoice = null;
@@ -604,15 +623,19 @@
                 case 0:
                     hasChoice = index;
                     setTimeout(() => {
-                        codeTop.style.top = '0';
-                        codeBottom.style.bottom = '0';
+                        // codeTop.style.top = '0';
+                        // codeBottom.style.bottom = '0';
+                        codeTop.classList.add('top-in-zero');
+                        codeBottom.classList.add('bottom-in-zero');
                     }, 400);
                     break;
                 case 1:
                     hasChoice = index;
                     setTimeout(() => {
-                        classifyLeft.style.left = '0';
-                        classifyRight.style.right = '0';
+                        // classifyLeft.style.left = '0';
+                        // classifyRight.style.right = '0';
+                        classifyLeft.classList.add('left-in-zero');
+                        classifyRight.classList.add('right-in-zero');
                     }, 400);
                     break;
             }
@@ -680,10 +703,10 @@
         codeBtnSave = document.querySelector('.code-btn-save'),
         codeTopAddBox = document.querySelector('.code-top-add-box');
 
-    function removeEl(father, el, direction) {
+    function removeEl(father, el, value) {
         if (el) {
             let oldEl = el;
-            oldEl.style[direction] = '-50%';
+            oldEl.style.transform = value;
             oldEl.style.opacity = '0';
             setTimeout(() => {
                 father.removeChild(oldEl);
@@ -692,8 +715,8 @@
     }
 
     function removeCodeEl(imageEl, labelEl) {
-        removeEl(codeTopLeft, imageEl, 'left');
-        removeEl(codeTopRight, labelEl, 'right');
+        removeEl(codeTopLeft, imageEl, 'translate(50%, -50%) translateX(-50vw)');
+        removeEl(codeTopRight, labelEl, 'translate(50%, -50%) translateX(50vw)');
     }
 
     function nextCodeImage() {
@@ -933,7 +956,7 @@
     function removeClassifyImage(image) {
         if (image) {
             let oldImg = image;
-            oldImg.style.left = '-100%';
+            oldImg.style.transform = 'translate(-50%, -50%) translateX(-50vw)';
             oldImg.style.opacity = '0';
             setTimeout(() => {
                 classifyLeft.removeChild(oldImg);
