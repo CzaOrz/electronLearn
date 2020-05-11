@@ -60,7 +60,7 @@
             height: 60px;
             width: 60px;
             border-radius: 50%;
-            background-color: rgba(255,255,255,.4);
+            background-color: rgba(255, 255, 255, .4);
             position: absolute;
             animation: bubble 9s infinite;
         }
@@ -642,24 +642,39 @@
             setTimeout(addChoice, 300);
         })
     });
-    topMenuBtn.ondragstart = function (e) {
-        this.classList.remove('top-menu-btn-static');
-    };
-    topMenuBtn.ondragend = function (e) {
-        this.classList.add('top-menu-btn-static');
-    };
-    topMenuBtn.ondrag = function (e) {
+    var
+        topMenuBtnClicked = false,
+        topMenuBtnMoving = false;
+
+    function topMenuBtnMove(e) {
         topMenuBtn.style.left = `${e.clientX - 26}px`;
         topMenuBtn.style.top = `${e.clientY - 26}px`;
-    };
-    document.body.ondragover = e => {
-        e.preventDefault();
-    };
-    topMenuBtn.addEventListener('click', function () {
-        this.style.opacity = '0';
-        hasChoiceBool = false;
-        setTimeout(removeChoice, 300);
-    })
+    }
+
+    topMenuBtn.addEventListener('mousedown', () => {
+        topMenuBtnClicked = true;
+        setTimeout(() => {
+            if (!topMenuBtnClicked) return;
+            topMenuBtn.classList.remove('top-menu-btn-static');
+            topMenuBtnMoving = true;
+            document.addEventListener('mousemove', topMenuBtnMove);
+        }, 500);
+    });
+    topMenuBtn.addEventListener('mouseup', () => {
+        topMenuBtnClicked = false;
+        if (topMenuBtnMoving) {
+            topMenuBtnMoving = false;
+            document.removeEventListener('mousemove', topMenuBtnMove);
+            topMenuBtn.classList.add('top-menu-btn-static');
+        } else {
+            topMenuBtn.style.opacity = '0';
+            hasChoiceBool = false;
+            setTimeout(removeChoice, 300);
+        }
+    });
+    // topMenuBtn.addEventListener('mousemove', e => {
+    //     console.log(e);
+    // })
 </script>
 <!-- 打码器 -->
 <div class="code-box code-top">
